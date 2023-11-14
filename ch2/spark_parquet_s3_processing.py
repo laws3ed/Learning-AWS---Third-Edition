@@ -21,7 +21,7 @@ print("Spark parquet processing start time: ", datetime.now())
 
 start = time.time()
 
-spark = SparkSession.builder.master("local[*]").config('spark.jars.packages', 'org.apache.hadoop:hadoop-aws:3.3.2').config('spark.hadoop.fs.s3a.access.key','AKIASYQBQFITKEVIX55X').config('spark.hadoop.fs.s3a.secret.key', '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').config("spark.driver.host", "localhost").config("spark.sql.shuffle.partitions", "3000").config("spark.sql.broadcastTimeout", "36000").appName('PySpark Read Parquet').config("spark.driver.memory", "230g").config("spark.network.timeout", "10000000").config("spark.executor.memory", "230g").config("spark.driver.maxResultSize", "230g").getOrCreate()
+spark = SparkSession.builder.master("local[*]").config('spark.jars.packages', 'org.apache.hadoop:hadoop-aws:3.3.2').config('spark.hadoop.fs.s3a.access.key','REPLACE WITH YOUR ACCESS KEY').config('spark.hadoop.fs.s3a.secret.key', 'REPLACE WITH YOUR SECRET KEY').config("spark.driver.host", "localhost").config("spark.sql.shuffle.partitions", "3000").config("spark.sql.broadcastTimeout", "36000").appName('PySpark Read Parquet').config("spark.driver.memory", "230g").config("spark.network.timeout", "10000000").config("spark.executor.memory", "230g").config("spark.driver.maxResultSize", "230g").getOrCreate()
 spark.sparkContext.setLogLevel("ERROR")
 
 df1 = spark.read.parquet("s3a://laws3edbucket/parquet_partitioned_dir_1/")
