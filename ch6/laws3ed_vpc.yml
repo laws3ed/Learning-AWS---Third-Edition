@@ -1,0 +1,72 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Create a VPC with two subnets, an internet gateway, and route tables
+Resources:
+  Laws3edVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      InstanceTenancy: default
+  Laws3edSubnetAZ1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Laws3edVPC
+      AvailabilityZone: !Select
+        - 0
+        - !GetAZs ''
+      CidrBlock: !Sub 10.0.0.0/20
+      MapPublicIpOnLaunch: true
+  Laws3edSubnetAZ2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Laws3edVPC
+      AvailabilityZone: !Select
+        - 1
+        - !GetAZs ''
+      CidrBlock: !Sub 10.0.32.0/20
+      MapPublicIpOnLaunch: true
+  Laws3edInternetGateway:
+    Type: AWS::EC2::InternetGateway
+  Laws3edVPCGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref Laws3edInternetGateway
+      VpcId: !Ref Laws3edVPC
+  Laws3edRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref Laws3edVPC
+  Laws3edRouteTableAssociationSubnetAZ1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref Laws3edSubnetAZ1
+      RouteTableId: !Ref Laws3edRouteTable
+  Laws3edRouteTableAssociationSubnetAZ2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref Laws3edSubnetAZ2
+      RouteTableId: !Ref Laws3edRouteTable
+  Laws3edInternetRoute:
+    Type: AWS::EC2::Route
+    DependsOn: Laws3edVPCGatewayAttachment
+    Properties:
+      GatewayId: !Ref Laws3edInternetGateway
+      RouteTableId: !Ref Laws3edRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+Outputs:
+  Laws3edVPC:
+    Description: VPC for Learning AWS Third Edition
+    Value: !Ref Laws3edVPC
+    Export:
+      Name: Laws3edVPC
+  Laws3edSubnetAZ1:
+    Description: Laws3ed Subnet 1 on Availability Zone 1
+    Value: !Ref Laws3edSubnetAZ1
+    Export:
+      Name: Laws3edSubnetAZ1
+  Laws3edSubnetAZ2:
+    Description: Laws3ed Subnet 2 on Availability Zone 2
+    Value: !Ref Laws3edSubnetAZ2
+    Export:
+      Name: Laws3edSubnetAZ2
